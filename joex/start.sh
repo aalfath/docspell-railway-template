@@ -35,6 +35,10 @@ case "${DOCSPELL_JOEX_BASE__URL:-}" in
     ;;
 esac
 
+# Look for new jobs every minute even if a notification from the REST server
+# was missed (Docspell's default is 30 minutes).
+export DOCSPELL_JOEX_SCHEDULER_WAKEUP__PERIOD="${DOCSPELL_JOEX_SCHEDULER_WAKEUP__PERIOD:-1 minute}"
+
 export TZ="${TZ:-UTC}"
 
 exec /opt/joex-entrypoint.sh "$@"

@@ -7,7 +7,7 @@ This repo is the source of the **Docspell** template on Railway. It deploys [Doc
 | Service | Source | Purpose |
 |---|---|---|
 | `restserver` | [`restserver/`](restserver/) (`ghcr.io/docspell/restserver:v0.43.0`, pinned by digest) | Web UI and REST API, public domain, health check `/api/info/version` |
-| `joex` | [`joex/`](joex/) (`ghcr.io/docspell/joex:v0.43.0`, pinned by digest) | Job executor: OCR (tesseract/ocrmypdf), text extraction, PDF conversion, previews, full-text indexing. Private only |
+| `joex` | [`joex/`](joex/) (`ghcr.io/docspell/joex:v0.43.0`, pinned by digest) | Job executor: OCR (tesseract/ocrmypdf), text extraction, PDF conversion, previews, full-text indexing. Private only, no health check (so old and new joex never run side by side during a redeploy) |
 | `Postgres` | Railway PostgreSQL | Database. Docspell stores uploaded files, metadata and the full-text index here, so the Postgres volume is the only data to back up |
 
 Each app folder holds a `Dockerfile` (the official image, pinned by version and digest) and a small `start.sh` that maps Railway's `PORT`, binds to IPv4 and IPv6 (Railway's private network is IPv6), and sets fixed defaults: full-text search in PostgreSQL (no Solr service), invite-only sign-up, addons off.

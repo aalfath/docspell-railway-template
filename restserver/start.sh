@@ -35,6 +35,14 @@ case "${DOCSPELL_SERVER_INTERNAL__URL:-}" in
     ;;
 esac
 
+# Docspell removes a node's pub/sub registration when that node shuts down.
+# Railway starts the new deployment before it stops the old one, so with a
+# fixed id the old instance would delete the new one's registration. Use one
+# id per deployment instead.
+if [ -z "${DOCSPELL_SERVER_APP__ID:-}" ] && [ -n "${RAILWAY_DEPLOYMENT_ID:-}" ]; then
+  export DOCSPELL_SERVER_APP__ID="rest-$(echo "$RAILWAY_DEPLOYMENT_ID" | cut -c1-8)"
+fi
+
 export TZ="${TZ:-UTC}"
 
 exec /opt/docspell-restserver/bin/docspell-restserver "$@"
