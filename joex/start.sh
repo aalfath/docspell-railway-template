@@ -20,6 +20,21 @@ export DOCSPELL_JOEX_FULL__TEXT__SEARCH_POSTGRESQL_USE__DEFAULT__CONNECTION="${D
 export DOCSPELL_JOEX_CONVERT_HTML__CONVERTER="${DOCSPELL_JOEX_CONVERT_HTML__CONVERTER:-weasyprint}"
 export DOCSPELL_JOEX_ADDONS_EXECUTOR__CONFIG_RUNNER="${DOCSPELL_JOEX_ADDONS_EXECUTOR__CONFIG_RUNNER:-trivial}"
 
+# Other Docspell nodes reach this one at this URL. If Railway's private domain
+# wasn't rendered (empty host), fall back to <service>.railway.internal.
+case "${DOCSPELL_JOEX_BASE__URL:-}" in
+  ""|*"://:"*)
+    _host="${RAILWAY_PRIVATE_DOMAIN:-}"
+    if [ -z "$_host" ] && [ -n "${RAILWAY_SERVICE_NAME:-}" ]; then
+      _host="$(echo "$RAILWAY_SERVICE_NAME" | tr '[:upper:]' '[:lower:]').railway.internal"
+    fi
+    if [ -n "$_host" ]; then
+      export DOCSPELL_JOEX_BASE__URL="http://$_host:${PORT:-7878}"
+      echo "railway-start: DOCSPELL_JOEX_BASE__URL set to $DOCSPELL_JOEX_BASE__URL"
+    fi
+    ;;
+esac
+
 export TZ="${TZ:-UTC}"
 
 exec /opt/joex-entrypoint.sh "$@"

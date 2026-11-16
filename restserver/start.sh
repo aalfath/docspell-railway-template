@@ -20,6 +20,21 @@ export DOCSPELL_SERVER_BACKEND_SIGNUP_MODE="${DOCSPELL_SERVER_BACKEND_SIGNUP_MOD
 # Addons need Docker or Nix inside the container, which Railway doesn't offer.
 export DOCSPELL_SERVER_BACKEND_ADDONS_ENABLED="${DOCSPELL_SERVER_BACKEND_ADDONS_ENABLED:-false}"
 
+# Other Docspell nodes reach this one at this URL. If Railway's private domain
+# wasn't rendered (empty host), fall back to <service>.railway.internal.
+case "${DOCSPELL_SERVER_INTERNAL__URL:-}" in
+  ""|*"://:"*)
+    _host="${RAILWAY_PRIVATE_DOMAIN:-}"
+    if [ -z "$_host" ] && [ -n "${RAILWAY_SERVICE_NAME:-}" ]; then
+      _host="$(echo "$RAILWAY_SERVICE_NAME" | tr '[:upper:]' '[:lower:]').railway.internal"
+    fi
+    if [ -n "$_host" ]; then
+      export DOCSPELL_SERVER_INTERNAL__URL="http://$_host:${PORT:-7880}"
+      echo "railway-start: DOCSPELL_SERVER_INTERNAL__URL set to $DOCSPELL_SERVER_INTERNAL__URL"
+    fi
+    ;;
+esac
+
 export TZ="${TZ:-UTC}"
 
 exec /opt/docspell-restserver/bin/docspell-restserver "$@"
