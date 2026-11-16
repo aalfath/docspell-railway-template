@@ -1,0 +1,37 @@
+# Local test of the Railway template: same images and variables as on Railway.
+name: docspell-railway
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: localtestpassword
+      POSTGRES_DB: railway
+    volumes:
+      - pgdata:/var/lib/postgresql
+  restserver:
+    build: ./restserver
+    ports:
+      - "7880"
+    environment:
+      PORT: "7880"
+      DOCSPELL_SERVER_BACKEND_JDBC_URL: jdbc:postgresql://db:5432/railway
+      DOCSPELL_SERVER_BACKEND_JDBC_USER: postgres
+      DOCSPELL_SERVER_BACKEND_JDBC_PASSWORD: localtestpassword
+      DOCSPELL_SERVER_BASE__URL: http://localhost:7880
+      DOCSPELL_SERVER_INTERNAL__URL: http://restserver:7880
+      DOCSPELL_SERVER_AUTH_SERVER__SECRET: local-auth-secret-change-me
+      DOCSPELL_SERVER_ADMIN__ENDPOINT_SECRET: local-admin-secret-change-me
+      DOCSPELL_SERVER_BACKEND_SIGNUP_NEW__INVITE__PASSWORD: local-invite-password
+    depends_on: [db]
+  joex:
+    build: ./joex
+    environment:
+      PORT: "7878"
+      DOCSPELL_JOEX_JDBC_URL: jdbc:postgresql://db:5432/railway
+      DOCSPELL_JOEX_JDBC_USER: postgres
+      DOCSPELL_JOEX_JDBC_PASSWORD: localtestpassword
+      DOCSPELL_JOEX_BASE__URL: http://joex:7878
+    depends_on: [db]
+volumes:
+  pgdata:

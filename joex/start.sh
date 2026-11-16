@@ -1,0 +1,25 @@
+#!/bin/sh
+# Railway wrapper for the Docspell job executor (joex). Fixed settings live
+# here, so the template only carries references and PORT.
+set -e
+
+# Listen on Railway's PORT, on all IPv4 and IPv6 interfaces (Railway's private
+# network is IPv6). The REST server reaches joex through DOCSPELL_JOEX_BASE__URL.
+export DOCSPELL_JOEX_BIND_ADDRESS="${DOCSPELL_JOEX_BIND_ADDRESS:-::}"
+export DOCSPELL_JOEX_BIND_PORT="${PORT:-7878}"
+
+export DOCSPELL_JOEX_APP__ID="${DOCSPELL_JOEX_APP__ID:-joex1}"
+export DOCSPELL_JOEX_SCHEDULER_NAME="${DOCSPELL_JOEX_SCHEDULER_NAME:-$DOCSPELL_JOEX_APP__ID}"
+export DOCSPELL_JOEX_PERIODIC__SCHEDULER_NAME="${DOCSPELL_JOEX_PERIODIC__SCHEDULER_NAME:-$DOCSPELL_JOEX_APP__ID}"
+
+# Full-text search in PostgreSQL (no Solr service needed).
+export DOCSPELL_JOEX_FULL__TEXT__SEARCH_ENABLED="${DOCSPELL_JOEX_FULL__TEXT__SEARCH_ENABLED:-true}"
+export DOCSPELL_JOEX_FULL__TEXT__SEARCH_BACKEND="${DOCSPELL_JOEX_FULL__TEXT__SEARCH_BACKEND:-postgresql}"
+export DOCSPELL_JOEX_FULL__TEXT__SEARCH_POSTGRESQL_USE__DEFAULT__CONNECTION="${DOCSPELL_JOEX_FULL__TEXT__SEARCH_POSTGRESQL_USE__DEFAULT__CONNECTION:-true}"
+
+export DOCSPELL_JOEX_CONVERT_HTML__CONVERTER="${DOCSPELL_JOEX_CONVERT_HTML__CONVERTER:-weasyprint}"
+export DOCSPELL_JOEX_ADDONS_EXECUTOR__CONFIG_RUNNER="${DOCSPELL_JOEX_ADDONS_EXECUTOR__CONFIG_RUNNER:-trivial}"
+
+export TZ="${TZ:-UTC}"
+
+exec /opt/joex-entrypoint.sh "$@"
