@@ -1,3 +1,5 @@
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template/docspell-1?utm_medium=integration&utm_source=button&utm_campaign=docspell)
+
 # Docspell on Railway
 
 This repo is the source of the **Docspell** template on Railway. It deploys [Docspell](https://docspell.org) 0.43.0, a self-hosted document organizer, with full-text search in PostgreSQL and invite-only sign-up.
